@@ -65,7 +65,7 @@ public class AllMusic implements ModInitializer {
 
     private static void stopPlaying() {
         try {
-            nowPlaying.close();
+            nowPlaying.closePlayer();
             hudUtils.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -74,7 +74,7 @@ public class AllMusic implements ModInitializer {
 
     private static final MatrixStack stack = new MatrixStack();
 
-    public static void drawText(String item, float x, float y){
+    public static void drawText(String item, float x, float y) {
         var hud = MinecraftClient.getInstance().textRenderer;
         hud.draw(stack, item, x, y, 0xffffff);
     }
@@ -86,7 +86,7 @@ public class AllMusic implements ModInitializer {
         DrawableHelper.drawTexture(stack, x, y, 0, 0, 0, size, size, size, size);
     }
 
-    public static void sendMessage(String data){
+    public static void sendMessage(String data) {
         MinecraftClient.getInstance().execute(() -> {
             if (MinecraftClient.getInstance().player == null)
                 return;
@@ -94,17 +94,20 @@ public class AllMusic implements ModInitializer {
         });
     }
 
-    public static void runMain(Runnable runnable){
+    public static void runMain(Runnable runnable) {
         MinecraftClient.getInstance().execute(runnable);
     }
 
-    public static float getVolume(){
+    public static float getVolume() {
         return MinecraftClient.getInstance().options.getSoundVolume(SoundCategory.RECORDS);
     }
 
-    public static void reload(){
-
+    public static void reload() {
+        if (nowPlaying != null) {
+            nowPlaying.setReload();
+        }
     }
+
     @Override
     public void onInitialize() {
         ClientPlayNetworking.registerGlobalReceiver(ID, (client, handler, buffer, responseSender) -> {

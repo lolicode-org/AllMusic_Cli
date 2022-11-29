@@ -23,6 +23,6 @@ public class SoundEvent {
 
     @Inject(method = "reloadSounds", at = @At("RETURN"))
     public void reload(CallbackInfo info){
-        AllMusic.nowPlaying.setReload();
+        AllMusic.reload();
     }
 }
