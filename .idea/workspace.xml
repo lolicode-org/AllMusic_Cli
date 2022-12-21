@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6a802f46-9f68-41e3-b6f5-fcc4d6a66ded" name="默认变更列表" comment="">
+    <list default="true" id="6a802f46-9f68-41e3-b6f5-fcc4d6a66ded" name="默认变更列表" comment="默认变更列表">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/allmusic.mod.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/fabric.mod.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Coloryr/AllMusic/AllMusic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Coloryr/AllMusic/AllMusic.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,17 +31,6 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="AllMusic_M" type="f1a62948:ProjectNode" />
               </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="AllMusic_M" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="AllMusic_M" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="build" type="c8890929:TasksNode$1" />
-              </path>
             </expand>
             <select />
           </tree_state>
@@ -59,6 +47,18 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$PROJECT_DIR$/.gradle/loom-cache/1.19/net.fabricmc.yarn.1_19.1.19+build.4-v2/minecraft-project-@-merged-named.jar!/net/minecraft/network/ClientConnection.class" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/.gradle/loom-cache/1.19/net.fabricmc.yarn.1_19.1.19+build.4-v2/minecraft-project-@-merged-named.jar!/net/minecraft/network/DecoderHandler.class" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/.gradle/loom-cache/1.19/net.fabricmc.yarn.1_19.1.19+build.4-v2/minecraft-project-@-merged-named.jar!/net/minecraft/network/LegacyQueryHandler.class" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/.gradle/loom-cache/1.19/net.fabricmc.yarn.1_19.1.19+build.4-v2/minecraft-project-@-merged-named.jar!/net/minecraft/network/NetworkSide.class" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/.gradle/loom-cache/1.19/net.fabricmc.yarn.1_19.1.19+build.4-v2/minecraft-project-@-merged-named.jar!/net/minecraft/network/NetworkState.class" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/.gradle/loom-cache/1.19/net.fabricmc.yarn.1_19.1.19+build.4-v2/minecraft-project-@-merged-named.jar!/net/minecraft/network/encryption/PacketDecryptor.class" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/.gradle/loom-cache/1.19/net.fabricmc.yarn.1_19.1.19+build.4-v2/minecraft-project-@-merged-named.jar!/net/minecraft/network/encryption/PacketEncryptionManager.class" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/.gradle/loom-cache/1.19/net.fabricmc.yarn.1_19.1.19+build.4-v2/minecraft-project-@-merged-named.jar!/net/minecraft/network/encryption/PacketEncryptor.class" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/.gradle/loom-cache/1.19/net.fabricmc.yarn.1_19.1.19+build.4-v2/minecraft-project-@-merged-named.jar!/net/minecraft/network/packet/s2c/play/EntitySpawnS2CPacket.class" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/.gradle/loom-cache/1.19/net.fabricmc.yarn.1_19.1.19+build.4-v2/minecraft-project-@-merged-named.jar!/net/minecraft/network/packet/s2c/query/QueryPongS2CPacket.class" root0="SKIP_INSPECTION" />
   </component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="tun3ar55" />
@@ -88,7 +88,9 @@
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;project.structure.last.edited&quot;: &quot;项目&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.ide.settings.new.ui&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -202,6 +204,14 @@
       <workItem from="1663847867832" duration="636000" />
       <workItem from="1664377081760" duration="39000" />
       <workItem from="1669724968445" duration="639000" />
+      <workItem from="1669725713636" duration="50000" />
+      <workItem from="1669726044810" duration="211000" />
+      <workItem from="1670207617951" duration="907000" />
+      <workItem from="1670209101335" duration="104000" />
+      <workItem from="1671253027106" duration="1274000" />
+      <workItem from="1671254325011" duration="14000" />
+      <workItem from="1671254350055" duration="523000" />
+      <workItem from="1671507121718" duration="15000" />
     </task>
     <servers />
   </component>
@@ -218,22 +228,6 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/coloryr/allmusic/player/APlayer.java</url>
-          <line>231</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/coloryr/allmusic/player/APlayer.java</url>
-          <line>201</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/AllMusic_M$AllMusic_M__runClient_.ic" NAME="AllMusic_M [runClient] 覆盖结果" MODIFIED="1624508671127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />

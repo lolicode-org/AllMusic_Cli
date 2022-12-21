@@ -32,7 +32,7 @@ public class AllMusic implements ModInitializer {
         hudUtils.save = null;
     }
 
-    public static void onClicentPacket(final String message) {
+    public static void onClientPacket(final String message) {
         new Thread(() -> {
             try {
                 if (message.equals("[Stop]")) {
@@ -116,7 +116,7 @@ public class AllMusic implements ModInitializer {
                 buffer.readBytes(buff);
                 buff[0] = 0;
                 String data = new String(buff, StandardCharsets.UTF_8).substring(1);
-                onClicentPacket(data);
+                onClientPacket(data);
             } catch (Exception e) {
                 e.printStackTrace();
             }
