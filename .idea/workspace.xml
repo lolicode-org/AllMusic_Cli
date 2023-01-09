@@ -103,7 +103,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "模块",
+    "project.structure.last.edited": "项目",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "reference.settings.ide.settings.new.ui",
@@ -121,7 +121,7 @@
       <recent name="E:\java-src\AllMusic_M\src\main\resources\Color_yr\AllMusic\player\decoder" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.AllMusic_M [runClient]">
+  <component name="RunManager" selected="Gradle.AllMusic_M [build]">
     <configuration name="AllMusic_M [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -199,8 +199,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.AllMusic_M [runClient]" />
         <item itemvalue="Gradle.AllMusic_M [build]" />
+        <item itemvalue="Gradle.AllMusic_M [runClient]" />
       </list>
     </recent_temporary>
   </component>
@@ -230,6 +230,7 @@
       <workItem from="1671254350055" duration="523000" />
       <workItem from="1671507121718" duration="15000" />
       <workItem from="1672981306027" duration="705000" />
+      <workItem from="1673245524661" duration="5953000" />
     </task>
     <servers />
   </component>

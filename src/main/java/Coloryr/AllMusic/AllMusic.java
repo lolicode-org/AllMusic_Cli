@@ -10,6 +10,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
@@ -26,6 +27,8 @@ public class AllMusic implements ModInitializer {
     public static APlayer nowPlaying;
     public static boolean isPlay = false;
     public static HudUtils hudUtils;
+    private static int ang = 0;
+    private static int count = 0;
 
     private static ScheduledExecutorService service;
 
@@ -88,17 +91,6 @@ public class AllMusic implements ModInitializer {
         hud.draw(stack, item, x, y, 0xffffff);
     }
 
-//    private Matrix4f glRotatef(float angle, float x, float y, float z){
-//        Matrix4f matrix4f = new Matrix4f();
-//        matrix4f.loadIdentity();
-//        if(x > 0)
-//        {
-//
-//        }
-//    }
-
-    private static int ang = 0;
-
     public static void drawPic(int textureID, int size, int x, int y) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -110,7 +102,9 @@ public class AllMusic implements ModInitializer {
         int a = size / 2;
 
         matrix.multiplyByTranslation(x + a, y + a, 0);
-        matrix.multiply(new Quaternion(0, 0, ang, true));
+        if(hudUtils.save.EnablePicRotate && hudUtils.thisRoute) {
+            matrix.multiply(new Quaternion(0, 0, ang, true));
+        }
         int x0 = -a;
         int x1 = a;
         int y0 = -a;
@@ -130,15 +124,11 @@ public class AllMusic implements ModInitializer {
         bufferBuilder.vertex(matrix, (float) x0, (float) y0, (float) z).texture(u0, v0).next();
 
         BufferRenderer.drawWithShader(bufferBuilder.end());
-
-        DrawableHelper.drawSprite();
     }
 
     public static void sendMessage(String data) {
         MinecraftClient.getInstance().execute(() -> {
-            if (MinecraftClient.getInstance().player == null)
-                return;
-            MinecraftClient.getInstance().player.sendChatMessage(data);
+            MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.of(data));
         });
     }
 
@@ -157,6 +147,13 @@ public class AllMusic implements ModInitializer {
     }
 
     private static void time1() {
+        if (hudUtils.save == null)
+            return;
+        if (count < hudUtils.save.PicRotateSpeed) {
+            count++;
+            return;
+        }
+        count = 0;
         ang++;
         ang = ang % 360;
     }
@@ -178,6 +175,6 @@ public class AllMusic implements ModInitializer {
         hudUtils = new HudUtils();
 
         service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(AllMusic::time1, 0, 50, TimeUnit.MILLISECONDS);
+        service.scheduleAtFixedRate(AllMusic::time1, 0, 1, TimeUnit.MILLISECONDS);
     }
 }
