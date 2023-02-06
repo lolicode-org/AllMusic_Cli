@@ -34,6 +34,7 @@ public class AllMusic implements ModInitializer {
     public static void onServerQuit() {
         try {
             nowPlaying.close();
+            nowPlaying.closePlayer();
             hudUtils.close();
         } catch (Exception e) {
             e.printStackTrace();
