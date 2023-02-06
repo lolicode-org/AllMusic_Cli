@@ -3,7 +3,6 @@ package coloryr.allmusic.player;
 import coloryr.allmusic.AllMusic;
 import coloryr.allmusic.player.decoder.BuffPack;
 import coloryr.allmusic.player.decoder.IDecoder;
-import coloryr.allmusic.player.decoder.flac.DataFormatException;
 import coloryr.allmusic.player.decoder.flac.FlacDecoder;
 import coloryr.allmusic.player.decoder.mp3.Mp3Decoder;
 import coloryr.allmusic.player.decoder.ogg.OggDecoder;
@@ -24,8 +23,6 @@ import java.net.URL;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.*;
 
@@ -179,7 +176,7 @@ public class APlayer extends InputStream {
                     try {
                         if (isClose) break;
                         BuffPack output = decoder.decodeFrame();
-                        if (output == null) break;
+                        if (output == null || output.len == 0) break;  // sometimes we won't get null, but a BuffPack with len 0
                         ByteBuffer byteBuffer = BufferUtils.createByteBuffer(
                                 output.len).put(output.buff, 0, output.len);
                         ((Buffer) byteBuffer).flip();
