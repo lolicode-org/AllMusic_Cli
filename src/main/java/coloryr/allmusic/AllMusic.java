@@ -3,10 +3,9 @@ package coloryr.allmusic;
 import coloryr.allmusic.hud.HudUtils;
 import coloryr.allmusic.player.APlayer;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.fabricmc.api.ModInitializer;
+import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundCategory;
@@ -14,14 +13,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
-import org.lwjgl.opengl.GL11;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class AllMusic implements ModInitializer {
+public class AllMusic implements ClientModInitializer {
     public static final Identifier ID = new Identifier("allmusic", "channel");
     public static APlayer nowPlaying;
     public static boolean isPlay = false;
@@ -128,8 +126,6 @@ public class AllMusic implements ModInitializer {
         bufferBuilder.vertex(matrix, (float) x0, (float) y0, (float) z).texture(u0, v0).next();
 
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-
-//        DrawableHelper.drawTexture();
     }
 
     public static void sendMessage(String data) {
@@ -165,7 +161,7 @@ public class AllMusic implements ModInitializer {
     }
 
     @Override
-    public void onInitialize() {
+    public void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(ID, (client, handler, buffer, responseSender) -> {
             try {
                 byte[] buff = new byte[buffer.readableBytes()];

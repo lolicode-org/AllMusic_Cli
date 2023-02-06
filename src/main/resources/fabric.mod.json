@@ -9,8 +9,8 @@
     "Color_yr"
   ],
   "contact": {
-    "homepage": "https://github.com/coloryr/AllMusic_M/",
-    "sources": "https://github.com/coloryr/AllMusic_M/"
+    "homepage": "https://github.com/lolicode-org/AllMusic_M/",
+    "sources": "https://github.com/lolicode-org/AllMusic_M/"
   },
 
   "license": "CC0-1.0",
@@ -18,7 +18,7 @@
 
   "environment": "*",
   "entrypoints": {
-    "main": [
+    "client": [
       "coloryr.allmusic.AllMusic"
     ]
   },
