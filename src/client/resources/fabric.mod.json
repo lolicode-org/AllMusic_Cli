@@ -20,6 +20,9 @@
 	"entrypoints": {
 		"client": [
 			"coloryr.allmusic_client.AllMusic"
+		],
+		"modmenu": [
+			"coloryr.allmusic_client.config.ModMenuIntegration"
 		]
 	},
 	"mixins": [

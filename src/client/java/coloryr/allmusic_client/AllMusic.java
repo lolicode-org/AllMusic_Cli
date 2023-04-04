@@ -1,8 +1,11 @@
 package coloryr.allmusic_client;
 
+import coloryr.allmusic_client.config.ModConfig;
 import coloryr.allmusic_client.hud.HudUtils;
 import coloryr.allmusic_client.player.APlayer;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -14,6 +17,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -31,10 +35,11 @@ public class AllMusic implements ClientModInitializer {
     public static HudUtils hudUtils;
     private static int ang = 0;
     private static int count = 0;
-    private static boolean isDisabled = false;
     private static KeyBinding keyBinding;
 
     private static ScheduledExecutorService service;
+
+    public static ModConfig config;
 
     public static void onServerQuit() {
         try {
@@ -52,8 +57,12 @@ public class AllMusic implements ClientModInitializer {
     public static void onClientPacket(final String message) {
         new Thread(() -> {
             try {
-                if (isDisabled) {
+                if (!config.enabled) {
                     return;
+                }
+                System.out.println("[DEBUG]" + message);
+                if (hudUtils.save == null) {
+                    hudUtils.setPos(config);
                 }
                 if (message.equals("[Stop]")) {
                     stopPlaying();
@@ -62,20 +71,21 @@ public class AllMusic implements ClientModInitializer {
                     MinecraftClient.getInstance().getSoundManager().stopSounds(null, SoundCategory.RECORDS);
                     stopPlaying();
                     nowPlaying.setMusic(message.replace("[Play]", ""));
-                } else if (message.startsWith("[Lyric]")) {
+                } else if (message.startsWith("[Lyric]") && config.enableHudLyric) {
                     hudUtils.Lyric = message.substring(7);
-                } else if (message.startsWith("[Info]")) {
+                } else if (message.startsWith("[Info]") && config.enableHudInfo) {
                     hudUtils.Info = message.substring(6);
-                } else if (message.startsWith("[List]")) {
+                } else if (message.startsWith("[List]") && config.enableHudList) {
                     hudUtils.List = message.substring(6);
-                } else if (message.startsWith("[Img]")) {
+                } else if (message.startsWith("[Img]") && config.enableHudImg) {
                     hudUtils.setImg(message.substring(5));
                 } else if (message.startsWith("[Pos]")) {
                     nowPlaying.set(message.substring(5));
                 } else if (message.equalsIgnoreCase("[clear]")) {
                     hudUtils.close();
-                } else if (message.startsWith("{")) {
-                    hudUtils.setPos(message);
+//                } else if (message.startsWith("{")) {
+//                    hudUtils.setPos(message);
+                    // Ignore server position
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -110,11 +120,10 @@ public class AllMusic implements ClientModInitializer {
         int a = size / 2;
 
 
-        if(hudUtils.save.EnablePicRotate && hudUtils.thisRoute) {
+        if (hudUtils.save.EnablePicRotate && hudUtils.thisRoute) {
             matrix = matrix.translationRotate(x + a, y + a, 0,
-                    new Quaternionf().fromAxisAngleDeg(0,0,1, ang));
-        }
-        else {
+                    new Quaternionf().fromAxisAngleDeg(0, 0, 1, ang));
+        } else {
             matrix = matrix.translation(x + a, y + a, 0);
         }
         int x0 = -a;
@@ -173,12 +182,11 @@ public class AllMusic implements ClientModInitializer {
     }
 
     private static void onDisablePressed(MinecraftClient client) {
-        if (isDisabled) {
-            isDisabled = false;
+        if (!config.enabled) {
+            config.enabled = true;
             client.player.sendMessage(Text.translatable("allmusic.enable"), false);
-        }
-        else {
-            isDisabled = true;
+        } else {
+            config.enabled = false;
             stopPlaying();
             client.player.sendMessage(Text.translatable("allmusic.disable"), false);
         }
@@ -215,5 +223,18 @@ public class AllMusic implements ClientModInitializer {
                 onDisablePressed(client);
             }
         });
+
+        AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
+        AutoConfig.getConfigHolder(ModConfig.class).registerSaveListener((manager, data) -> {
+                    config = data;
+                    if (!config.enabled) {
+                        stopPlaying();
+                    } else {
+                        hudUtils.setPos(config);
+                    }
+                    return ActionResult.SUCCESS;
+                }
+        );
+        config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
     }
 }

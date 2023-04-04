@@ -1,6 +1,7 @@
 package coloryr.allmusic_client.hud;
 
 import coloryr.allmusic_client.AllMusic;
+import coloryr.allmusic_client.config.ModConfig;
 import com.google.gson.Gson;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -185,9 +186,29 @@ public class HudUtils {
         semaphore.release();
     }
 
-    public void setPos(String data) {
+    public void setPos(ModConfig config) {
         synchronized (lock) {
-            save = new Gson().fromJson(data, SaveOBJ.class);
+//            save = new Gson().fromJson(data, SaveOBJ.class);
+            if (!config.enableHud) {
+                save = null;
+                return;
+            }
+            save = new SaveOBJ() {
+                {
+                    EnableInfo = config.enableHudInfo;
+                    EnableList = config.enableHudList;
+                    EnableLyric = config.enableHudLyric;
+                    EnablePic = config.enableHudImg;
+                    EnablePicRotate = config.enableHudImgRotate;
+                    PicRotateSpeed = config.imgRotateSpeed;
+                    Info = new PosOBJ(config.infoX, config.infoY);
+                    List = new PosOBJ(config.listX, config.listY);
+                    Lyric = new PosOBJ(config.lyricX, config.lyricY);
+                    Pic = new PosOBJ(config.imgX, config.imgY);
+                    PicSize = config.imgSize;
+                }
+            };
+            close();
         }
     }
 
