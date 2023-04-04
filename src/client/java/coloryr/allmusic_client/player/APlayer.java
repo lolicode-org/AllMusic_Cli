@@ -176,7 +176,7 @@ public class APlayer extends InputStream {
                     try {
                         if (isClose) break;
                         BuffPack output = decoder.decodeFrame();
-                        if (output == null) break;
+                        if (output == null || output.len == 0) break; // if server didn't send [STOP], we won't get null, but a BuffPack with len 0
                         ByteBuffer byteBuffer = BufferUtils.createByteBuffer(
                                 output.len).put(output.buff, 0, output.len);
                         ((Buffer) byteBuffer).flip();

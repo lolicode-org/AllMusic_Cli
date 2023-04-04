@@ -9,16 +9,16 @@
 		"Color_yr"
 	],
 	"contact": {
-		"homepage": "https://github.com/Coloryr/AllMusic_Client/",
-		"sources": "https://github.com/Coloryr/AllMusic_Client/"
+		"homepage": "https://github.com/lolicode-org/AllMusic_Cli/",
+		"sources": "https://github.com/lolicode-org/AllMusic_Cli/"
 	},
 
 	"license": "CC0-1.0",
 	"icon": "assets/allmusic_client/icon.png",
 
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
-		"main": [
+		"client": [
 			"coloryr.allmusic_client.AllMusic"
 		]
 	},
