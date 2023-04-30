@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 public class AllMusic implements ClientModInitializer {
     public static final Identifier ID = new Identifier("allmusic", "channel");
     public static APlayer nowPlaying;
+    public static String currentImg = "";
     public static boolean isPlay = false;
     public static HudUtils hudUtils;
     private static int ang = 0;
@@ -57,15 +58,22 @@ public class AllMusic implements ClientModInitializer {
     public static void onClientPacket(final String message) {
         new Thread(() -> {
             try {
+                // Record current img so we can get it back after altering the hud
+                // Even when we're not playing, we still need to update this, or we'll get wrong results after the server starts playing next music
+                if (message.startsWith("[Img]")) {
+                    currentImg = message.substring(5);
+                }
                 if (!config.enabled) {
                     return;
                 }
-                System.out.println("[DEBUG]" + message);
                 if (hudUtils.save == null) {
                     hudUtils.setPos(config);
                 }
                 if (message.equals("[Stop]")) {
                     stopPlaying();
+                    currentImg = null;  // Clear image cache so it will be reloaded for next song.
+                    // Have to do this here because the fucker server sometimes sends next image before sending next song.
+                    // If we clear it after we get [play] it might clear current image
                 } else if (message.startsWith("[Play]")) {
                     MinecraftClient.getInstance().getSoundManager().stopSounds(null, SoundCategory.MUSIC);
                     MinecraftClient.getInstance().getSoundManager().stopSounds(null, SoundCategory.RECORDS);

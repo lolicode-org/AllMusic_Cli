@@ -2,7 +2,7 @@ package coloryr.allmusic_client.hud;
 
 import coloryr.allmusic_client.AllMusic;
 import coloryr.allmusic_client.config.ModConfig;
-import com.google.gson.Gson;
+//import com.google.gson.Gson;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -79,6 +79,7 @@ public class HudUtils {
             int width = image.getWidth();
             if(save.EnablePicRotate) {
                 // 透明底的图片
+                //noinspection SuspiciousNameCombination
                 BufferedImage formatAvatarImage = new BufferedImage(width, width, BufferedImage.TYPE_4BYTE_ABGR);
                 Graphics2D graphics = formatAvatarImage.createGraphics();
                 //把图片切成一个园
@@ -209,6 +210,11 @@ public class HudUtils {
                 }
             };
             close();
+            // Reset img after config change, or it will be empty
+            if (config.enableHudImg && AllMusic.currentImg != null && !AllMusic.currentImg.isEmpty()) {
+                setImg(AllMusic.currentImg);
+                haveImg = true;
+            }
         }
     }
 
