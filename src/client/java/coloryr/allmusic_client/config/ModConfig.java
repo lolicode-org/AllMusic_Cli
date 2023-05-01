@@ -1,8 +1,12 @@
 package coloryr.allmusic_client.config;
 
 import coloryr.allmusic_client.AllMusic;
+import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Config(name = "allmusic")
 public class ModConfig implements ConfigData {
@@ -25,6 +29,8 @@ public class ModConfig implements ConfigData {
     public int imgSize = 70;
     public int imgRotateSpeed = 50;
 
+    public List<String> bannedServers = new ArrayList<>();
+
     public void validatePostLoad() {
         if (infoX < 0)
             infoX = 0;
@@ -46,5 +52,9 @@ public class ModConfig implements ConfigData {
             imgSize = 10;
 
         AllMusic.hudUtils.setPos(this);
+    }
+
+    public void save() {
+        AutoConfig.getConfigHolder(this.getClass()).save();
     }
 }

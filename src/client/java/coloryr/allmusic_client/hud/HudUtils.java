@@ -86,7 +86,7 @@ public class HudUtils {
                 graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 //留一个像素的空白区域，这个很重要，画圆的时候把这个覆盖
                 int border = (int) (width * 0.11);
-                //图片是一个圆型
+                //图片是一个圆形
                 Ellipse2D.Double shape = new Ellipse2D.Double(border, border, width - border * 2, width - border * 2);
                 //需要保留的区域
                 graphics.setClip(shape);
@@ -211,7 +211,8 @@ public class HudUtils {
             };
             close();
             // Reset img after config change, or it will be empty
-            if (config.enableHudImg && AllMusic.currentImg != null && !AllMusic.currentImg.isEmpty()) {
+            if (config.enableHudImg && AllMusic.currentImg != null
+                    && !AllMusic.currentImg.isEmpty() && !AllMusic.nowPlaying.isClose()) {
                 setImg(AllMusic.currentImg);
                 haveImg = true;
             }

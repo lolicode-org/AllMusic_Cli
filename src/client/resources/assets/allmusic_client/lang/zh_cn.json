@@ -3,6 +3,8 @@
   "key.allmusic.disable": "启用/禁用 AllMusic",
   "allmusic.enable": "§eAllMusic 已启用",
   "allmusic.disable": "§eAllMusic 已禁用",
+  "allmusic.server_enable": "§eAllMusic 已对此服务器启用",
+  "allmusic.server_disable": "§eAllMusic 已对此服务器禁用",
   "text.autoconfig.allmusic.title": "AllMusic 配置",
   "text.autoconfig.allmusic.option.enabled": "启用 AllMusic",
   "text.autoconfig.allmusic.option.enableHud": "启用 HUD",
@@ -20,5 +22,6 @@
   "text.autoconfig.allmusic.option.imgX": "封面HUD X 坐标",
   "text.autoconfig.allmusic.option.imgY": "封面HUD Y 坐标",
   "text.autoconfig.allmusic.option.imgSize": "封面HUD 尺寸",
-  "text.autoconfig.allmusic.option.imgRotateSpeed": "封面HUD 旋转速度"
+  "text.autoconfig.allmusic.option.imgRotateSpeed": "封面HUD 旋转速度",
+  "text.autoconfig.allmusic.option.bannedServers": "禁用服务器"
 }

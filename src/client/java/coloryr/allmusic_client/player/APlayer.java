@@ -70,6 +70,10 @@ public class APlayer extends InputStream {
         return isPlay;
     }
 
+    public boolean isClose() {
+        return isClose;
+    }
+
     public static URL Get(URL url) {
         if (url.toString().contains("https://music.163.com/song/media/outer/url?id=")
                 || url.toString().contains("http://music.163.com/song/media/outer/url?id=")) {

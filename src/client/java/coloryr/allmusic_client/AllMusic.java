@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.InputUtil;
@@ -24,6 +25,7 @@ import org.joml.Quaternionf;
 import org.lwjgl.glfw.GLFW;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +38,8 @@ public class AllMusic implements ClientModInitializer {
     public static HudUtils hudUtils;
     private static int ang = 0;
     private static int count = 0;
-    private static KeyBinding keyBinding;
+    private static KeyBinding globalDisableKeyBinding;
+    private static KeyBinding serverDisableKeyBinding;
 
     private static ScheduledExecutorService service;
 
@@ -63,7 +66,9 @@ public class AllMusic implements ClientModInitializer {
                 if (message.startsWith("[Img]")) {
                     currentImg = message.substring(5);
                 }
-                if (!config.enabled) {
+                if (!config.enabled ||
+                        config.bannedServers.contains(Objects.requireNonNull(
+                                MinecraftClient.getInstance().getCurrentServerEntry()).address)) {
                     return;
                 }
                 if (hudUtils.save == null) {
@@ -79,21 +84,23 @@ public class AllMusic implements ClientModInitializer {
                     MinecraftClient.getInstance().getSoundManager().stopSounds(null, SoundCategory.RECORDS);
                     stopPlaying();
                     nowPlaying.setMusic(message.replace("[Play]", ""));
-                } else if (message.startsWith("[Lyric]") && config.enableHudLyric) {
-                    hudUtils.Lyric = message.substring(7);
-                } else if (message.startsWith("[Info]") && config.enableHudInfo) {
-                    hudUtils.Info = message.substring(6);
-                } else if (message.startsWith("[List]") && config.enableHudList) {
-                    hudUtils.List = message.substring(6);
                 } else if (message.startsWith("[Img]") && config.enableHudImg) {
-                    hudUtils.setImg(message.substring(5));
-                } else if (message.startsWith("[Pos]")) {
-                    nowPlaying.set(message.substring(5));
-                } else if (message.equalsIgnoreCase("[clear]")) {
-                    hudUtils.close();
+                    hudUtils.setImg(message.substring(5));  // the server will only send img once (right before or after sending song), no need to check if is playing
+                } else if (!nowPlaying.isClose()) {  // Don't accept hud until next song
+                    if (message.startsWith("[Lyric]") && config.enableHudLyric) {
+                        hudUtils.Lyric = message.substring(7);
+                    } else if (message.startsWith("[Info]") && config.enableHudInfo) {
+                        hudUtils.Info = message.substring(6);
+                    } else if (message.startsWith("[List]") && config.enableHudList) {
+                        hudUtils.List = message.substring(6);
+                    } else if (message.startsWith("[Pos]")) {
+                        nowPlaying.set(message.substring(5));
+                    } else if (message.equalsIgnoreCase("[clear]")) {
+                        hudUtils.close();
 //                } else if (message.startsWith("{")) {
 //                    hudUtils.setPos(message);
-                    // Ignore server position
+                        // Ignore server position
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -189,15 +196,38 @@ public class AllMusic implements ClientModInitializer {
         ang = ang % 360;
     }
 
-    private static void onDisablePressed(MinecraftClient client) {
+    private static void onGlobalDisablePressed(MinecraftClient client) {
         if (!config.enabled) {
             config.enabled = true;
             client.player.sendMessage(Text.translatable("allmusic.enable"), false);
         } else {
             config.enabled = false;
             stopPlaying();
+            currentImg = null;
             client.player.sendMessage(Text.translatable("allmusic.disable"), false);
         }
+        config.save();
+    }
+
+    private static void onServerDisablePressed(MinecraftClient client) {
+        ServerInfo info = client.getCurrentServerEntry();
+        if (info == null) {
+            if (client.player != null)
+                client.player.sendMessage(Text.translatable("allmusic.not_multiplayer"), false);
+            return;
+        }
+        if (config.bannedServers.contains(info.address)) {
+            config.bannedServers.remove(info.address);
+            if (client.player != null)
+                client.player.sendMessage(Text.translatable("allmusic.server_enable"), false);
+        } else {
+            config.bannedServers.add(info.address);
+            stopPlaying();
+            currentImg = null;
+            if (client.player != null)
+                client.player.sendMessage(Text.translatable("allmusic.server_disable"), false);
+        }
+        config.save();
     }
 
     @Override
@@ -219,7 +249,7 @@ public class AllMusic implements ClientModInitializer {
         service = Executors.newSingleThreadScheduledExecutor();
         service.scheduleAtFixedRate(AllMusic::time1, 0, 1, TimeUnit.MILLISECONDS);
 
-        keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        globalDisableKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.allmusic.disable", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
                 GLFW.GLFW_KEY_F7, // The keycode of the key
@@ -227,8 +257,21 @@ public class AllMusic implements ClientModInitializer {
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (keyBinding.wasPressed()) {
-                onDisablePressed(client);
+            while (globalDisableKeyBinding.wasPressed()) {
+                onGlobalDisablePressed(client);
+            }
+        });
+
+        serverDisableKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.allmusic.server_disable", // The translation key of the keybinding's name
+                InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
+                GLFW.GLFW_KEY_F8, // The keycode of the key
+                "category.allmusic.general" // The translation key of the keybinding's category.
+        ));
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (serverDisableKeyBinding.wasPressed()) {
+                onServerDisablePressed(client);
             }
         });
 
