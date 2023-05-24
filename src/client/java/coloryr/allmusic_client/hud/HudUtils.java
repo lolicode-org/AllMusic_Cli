@@ -3,6 +3,10 @@ package coloryr.allmusic_client.hud;
 import coloryr.allmusic_client.AllMusic;
 import coloryr.allmusic_client.config.ModConfig;
 //import com.google.gson.Gson;
+import coloryr.allmusic_client.libs.lrcparser.Lyric;
+import coloryr.allmusic_client.libs.lrcparser.parser.LyricParser;
+import coloryr.allmusic_client.music.MusicObj;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -15,11 +19,12 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.*;
 
 public class HudUtils {
     public String Info = "";
@@ -36,6 +41,7 @@ public class HudUtils {
     private HttpGet get;
     private InputStream inputStream;
     public boolean thisRoute;
+    private ScheduledExecutorService lyricExecutor = null;
 
     public HudUtils() {
         Thread thread = new Thread(this::run);
@@ -45,6 +51,10 @@ public class HudUtils {
     }
 
     public void close() {
+        if (lyricExecutor != null) {
+            lyricExecutor.shutdownNow();
+            lyricExecutor = null;
+        }
         haveImg = false;
         Info = List = Lyric = "";
         getClose();
@@ -251,5 +261,46 @@ public class HudUtils {
                 AllMusic.drawPic(textureID, save.PicSize, save.Pic.x, save.Pic.y);
             }
         }
+    }
+
+    public void setLyric(MusicObj music) {
+        if (lyricExecutor != null && !lyricExecutor.isTerminated()) {
+            lyricExecutor.shutdownNow();
+        }
+        if (music.lyric == null || music.lyric.getLyric().isBlank()) {
+            return;
+        }
+
+        coloryr.allmusic_client.libs.lrcparser.Lyric lyric;  // 大写变量名？WTF？
+        coloryr.allmusic_client.libs.lrcparser.Lyric translation;
+        try {
+            LyricParser lyricParser = LyricParser.create(new BufferedReader(new StringReader(music.lyric.getLyric())));
+            LyricParser translationParser = music.lyric.getTranslation() == null ? null : LyricParser.create(new BufferedReader(new StringReader(music.lyric.getTranslation())));
+            translation = translationParser == null ? null : new Lyric(translationParser.getTags(), translationParser.getSentences());
+
+            lyric = new Lyric(lyricParser.getTags(), lyricParser.getSentences());
+            lyric.merge(translation);
+        } catch (Exception e) {
+            AllMusic.sendMessage("[AllMusic客户端]歌词解析错误");
+            e.printStackTrace();
+            return;
+        }
+
+        this.lyricExecutor = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Lyric-Thread").build());
+        final long startTime = System.currentTimeMillis();
+        lyricExecutor.scheduleAtFixedRate(() -> {
+            long currentTime = System.currentTimeMillis() - startTime;
+            if (currentTime > lyric.getDuration() || currentTime < 0) {
+                lyricExecutor.shutdownNow();
+                return;
+            }
+            String lrc = lyric.findContent(currentTime);
+            if (lrc == null) {
+                lrc = "";
+            }
+            synchronized (lock) {
+                Lyric = lrc;
+            }
+        }, 0, 2, TimeUnit.MILLISECONDS);
     }
 }

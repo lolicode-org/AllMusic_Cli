@@ -2,20 +2,26 @@ package coloryr.allmusic_client;
 
 import coloryr.allmusic_client.config.ModConfig;
 import coloryr.allmusic_client.hud.HudUtils;
+import coloryr.allmusic_client.packet.ListPacketReceiver;
+import coloryr.allmusic_client.packet.MetadataPacketReceiver;
 import coloryr.allmusic_client.player.APlayer;
 import com.mojang.blaze3d.systems.RenderSystem;
+import lol.bai.badpackets.api.PacketSender;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -32,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 public class AllMusic implements ClientModInitializer {
     public static final Identifier ID = new Identifier("allmusic", "channel");
+    public static final String NEKO_ID = "nekomusic";
     public static APlayer nowPlaying;
     public static String currentImg = "";
     public static boolean isPlay = false;
@@ -56,6 +63,19 @@ public class AllMusic implements ClientModInitializer {
         hudUtils.Lyric = hudUtils.Info = hudUtils.List = "";
         hudUtils.haveImg = false;
         hudUtils.save = null;
+    }
+
+    public static void PacketProcess(PacketByteBuf buf) {
+        try {
+            byte[] buff = new byte[buf.readableBytes()];
+            buf.readBytes(buff);
+            buff[0] = 0;
+            String data = new String(buff, StandardCharsets.UTF_8).substring(1);
+//            System.out.println(data);
+            onClientPacket(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void onClientPacket(final String message) {
@@ -200,11 +220,17 @@ public class AllMusic implements ClientModInitializer {
         if (!config.enabled) {
             config.enabled = true;
             client.player.sendMessage(Text.translatable("allmusic.enable"), false);
+            if (client.getCurrentServerEntry() != null && !config.bannedServers.contains(client.getCurrentServerEntry().address)) {
+                sendHello(client);
+            }
         } else {
             config.enabled = false;
             stopPlaying();
             currentImg = null;
             client.player.sendMessage(Text.translatable("allmusic.disable"), false);
+            if (client.getCurrentServerEntry() != null) {
+                sendBye(client);
+            }
         }
         config.save();
     }
@@ -220,28 +246,46 @@ public class AllMusic implements ClientModInitializer {
             config.bannedServers.remove(info.address);
             if (client.player != null)
                 client.player.sendMessage(Text.translatable("allmusic.server_enable"), false);
+            sendHello(client);
         } else {
             config.bannedServers.add(info.address);
             stopPlaying();
             currentImg = null;
             if (client.player != null)
                 client.player.sendMessage(Text.translatable("allmusic.server_disable"), false);
+            sendBye(client);
         }
         config.save();
+    }
+
+    private static void sendHello(MinecraftClient client) {
+        ServerInfo info = client.getCurrentServerEntry();
+        if (info == null) {
+            return;
+        }
+        try {
+            PacketSender.c2s().send(Identifier.of(NEKO_ID, "client_hello"), PacketByteBufs.empty());
+        } catch (Exception e) {
+            client.player.sendMessage(Text.translatable("allmusic.send_packet_fail"), false);
+        }
+    }
+
+    private static void sendBye(MinecraftClient client) {
+        ServerInfo info = client.getCurrentServerEntry();
+        if (info == null) {
+            return;
+        }
+        try {
+            PacketSender.c2s().send(Identifier.of(NEKO_ID, "client_bye"), PacketByteBufs.empty());
+        } catch (Exception e) {
+            client.player.sendMessage(Text.translatable("allmusic.send_packet_fail"), false);
+        }
     }
 
     @Override
     public void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(ID, (client, handler, buffer, responseSender) -> {
-            try {
-                byte[] buff = new byte[buffer.readableBytes()];
-                buffer.readBytes(buff);
-                buff[0] = 0;
-                String data = new String(buff, StandardCharsets.UTF_8).substring(1);
-                onClientPacket(data);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            PacketProcess(buffer);
         });
         nowPlaying = new APlayer();
         hudUtils = new HudUtils();
@@ -274,6 +318,20 @@ public class AllMusic implements ClientModInitializer {
                 onServerDisablePressed(client);
             }
         });
+
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            ServerInfo info = client.getCurrentServerEntry();
+            if (info == null) {
+                return;
+            }
+            if (config.enabled && !config.bannedServers.contains(info.address)) {
+                sendHello(client);
+            }
+        });
+
+//        S2CPacketReceiver.register(Identifier.of(NEKO_ID, "channel"), new PacketReceiver());
+        MetadataPacketReceiver.register();
+        ListPacketReceiver.register();
 
         AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
         AutoConfig.getConfigHolder(ModConfig.class).registerSaveListener((manager, data) -> {

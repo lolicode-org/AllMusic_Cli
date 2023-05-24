@@ -5,6 +5,8 @@
   "allmusic.disable": "§eAllMusic disabled",
   "allmusic.server_enable": "§eAllMusic enabled for this server",
   "allmusic.server_disable": "§eAllMusic disabled for this server",
+  "allmusic.send_packet_fail": "§cFailed to send packet to server",
+  "allmusic.not_multiplayer": "§cThis is not a multiplayer server",
   "text.autoconfig.allmusic.title": "AllMusic Config",
   "text.autoconfig.allmusic.option.enabled": "Enable AllMusic",
   "text.autoconfig.allmusic.option.enableHud": "Enable HUD",

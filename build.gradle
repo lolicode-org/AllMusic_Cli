@@ -19,6 +19,7 @@ repositories {
 	// for more information about repositories.
 	maven { url "https://maven.shedaniel.me/" }
 	maven { url "https://maven.terraformersmc.com/releases/" }
+	maven { url "https://maven.bai.lol" }
 }
 
 loom {
@@ -50,6 +51,7 @@ dependencies {
 		exclude(module: "fabric-api")
 	}
 	modApi "com.terraformersmc:modmenu:${project.mod_menu_version}"
+	modImplementation "lol.bai:badpackets:fabric-${badpackets_version}"
 }
 
 processResources {

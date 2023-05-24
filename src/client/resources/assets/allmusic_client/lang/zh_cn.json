@@ -5,6 +5,8 @@
   "allmusic.disable": "§eAllMusic 已禁用",
   "allmusic.server_enable": "§eAllMusic 已对此服务器启用",
   "allmusic.server_disable": "§eAllMusic 已对此服务器禁用",
+  "allmusic.send_packet_fail": "§cAllMusic 向服务器发送数据包失败",
+  "allmusic.not_multiplayer": "§cAllMusic 仅支持多人游戏",
   "text.autoconfig.allmusic.title": "AllMusic 配置",
   "text.autoconfig.allmusic.option.enabled": "启用 AllMusic",
   "text.autoconfig.allmusic.option.enableHud": "启用 HUD",
