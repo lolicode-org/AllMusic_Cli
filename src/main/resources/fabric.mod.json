@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "nekomusic_cli",
+  "version": "${version}",
+  "name": "NekoMusic_Cli",
+  "description": "A fork of coloryr's AllMusic",
+  "authors": [
+    "color_yr",
+    "KoishiMoe"
+  ],
+  "contact": {
+    "repo": "https://github.com/KoishiMoe/NekoMusic_Cli"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/nekomusic_cli/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "org.lolicode.nekomusic_cli.NekoMusic_Cli"
+    ],
+    "modmenu": [
+      "org.lolicode.nekomusic_cli.config.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "nekomusic_cli.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": ">=${minecraft_version}"
+  }
+}
